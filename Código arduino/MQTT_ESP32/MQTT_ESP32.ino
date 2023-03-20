@@ -8,11 +8,15 @@ extern "C" {
 #include <AsyncMqttClient.h>
 
 // Conexión WiFi
-const char* SSID = "POCOX3";
-const char* SSID_PASSWORD = "pocox5597";
+/*const char* SSID = "POCOX3";
+const char* SSID_PASSWORD = "pocox5597";*/
+
+const char* SSID = "Alejate_de_mi_WiFi";
+const char* SSID_PASSWORD = "0107100596nand74ls00";
 
 // Conexión con mosquitto Broker
-#define MQTT_HOST IPAddress(192, 168, 0, 53) 
+//#define MQTT_HOST IPAddress(192, 168, 0, 53) 
+#define MQTT_HOST "192.168.0.53" 
 #define MQTT_PORT 1883
 
 //MQTT Topics
@@ -20,10 +24,11 @@ const char* SSID_PASSWORD = "pocox5597";
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
 
 // Definimos el pin digital donde se conecta el sensor
-#define DHTPIN 2
+#define DHTPIN 15
 // Dependiendo del tipo de sensor
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
+
 float temperature_DHT, humidity_DHT; //variables for DHT
 
 
@@ -86,6 +91,7 @@ void onMqttPublish(uint16_t packetId) {
 void setup() {
   Serial.begin(115200);
   Serial.println();
+//  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
 
   dht.begin();
   delay(1000);
@@ -119,7 +125,7 @@ void loop() {
     unsigned long currentMillis = millis();
 
     // Publish an MQTT message on topic esp32/dht/temperature
-    uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP_DHT, 1, true, String(temperature_DHT).c_str());                            
+    uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP_DHT, 0, true, String(temperature_DHT).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_TEMP_DHT, packetIdPub1);
     Serial.printf("Message: %.2f \n", temperature_DHT);
 
