@@ -11,20 +11,27 @@ extern "C" {
 /*const char* SSID = "POCOX3";
 const char* SSID_PASSWORD = "pocox5597";*/
 
-const char* SSID = "Alejate_de_mi_WiFi";
-const char* SSID_PASSWORD = "0107100596nand74ls00";
+//const char* SSID = "Alejate_de_mi_WiFi";
+//const char* SSID_PASSWORD = "0107100596nand74ls00";
+
+const char* SSID = "PCJD";
+const char* SSID_PASSWORD = "12345678";
 
 // Conexión con mosquitto Broker
 //#define MQTT_HOST IPAddress(192, 168, 0, 53) 
-#define MQTT_HOST "192.168.0.53" 
+// host movil
+#define MQTT_HOST "192.168.137.198"
+//#define MQTT_HOST "192.168.0.53" 
 #define MQTT_PORT 1883
 
 //MQTT Topics
 #define MQTT_PUB_TEMP_DHT "esp32/dht/temperature"
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
 #define MQTT_SUB_OUT_TEMP "esp32/OutputControl"
+#define MQTT_SUB_DOOR "esp32/DoorControl"
 
 const int OutPin = 22;
+const int DoorPin = 23;
 
 // Definimos el pin digital donde se conecta el sensor
 #define DHTPIN 15
@@ -80,6 +87,12 @@ void onMqttConnect(bool sessionPresent) {
   uint16_t packetIdSub = mqttClient.subscribe(MQTT_SUB_OUT_TEMP, 2);
   Serial.print("Subscribing at QoS 2, packetId: ");
   Serial.println(packetIdSub);
+
+  //suscripcion para control de la puerta
+  uint16_t packetIdSub2 = mqttClient.subscribe(MQTT_SUB_DOOR, 2);
+  Serial.print("Subscribing at QoS 2, packetId: ");
+  Serial.println(packetIdSub2);
+  
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -109,7 +122,7 @@ void onMqttUnsubscribe(uint16_t packetId) {
   Serial.println(packetId);
 }
 
-
+//mensaje para OutPin
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   Serial.println("\n Publish received.");
   Serial.print("topic: ");
@@ -132,11 +145,35 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
 }
 
+//Void message para control de puerta
+void onMqttMessage2(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+  Serial.println("\n Publish received.");
+  Serial.print("topic: ");
+  Serial.println(topic);
+  String messageDoor;
+  for (int i = 0; i < len; i++) {
+    messageDoor += (char)payload[i];
+  }
+    Serial.print("Message: ");
+    Serial.println(messageDoor);
+
+  if (messageDoor == "OPEN"){
+  digitalWrite(DoorPin, HIGH); 
+  Serial.println("Bodega abierta");
+  }
+  if (messageDoor == "CLOSE"){
+  digitalWrite(DoorPin, LOW); 
+  Serial.println("Bodega abierta");
+  }
+
+}
+
 
 void setup() {
   Serial.begin(115200);
   Serial.println();
    pinMode(OutPin, OUTPUT);
+   pinMode(DoorPin, OUTPUT);
 
   dht.begin();
   delay(1000);
@@ -152,6 +189,8 @@ void setup() {
   mqttClient.onSubscribe(onMqttSubscribe);
   mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
+  // puerta
+   mqttClient.onMessage(onMqttMessage2);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   connectToWifi();
 
