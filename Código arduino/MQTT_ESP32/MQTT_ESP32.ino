@@ -22,6 +22,9 @@ const char* SSID_PASSWORD = "0107100596nand74ls00";
 //MQTT Topics
 #define MQTT_PUB_TEMP_DHT "esp32/dht/temperature"
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
+#define MQTT_SUB_OUT_TEMP "esp32/OutputControl"
+
+const int OutPin = 22;
 
 // Definimos el pin digital donde se conecta el sensor
 #define DHTPIN 15
@@ -73,6 +76,10 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
+
+  uint16_t packetIdSub = mqttClient.subscribe(MQTT_SUB_OUT_TEMP, 2);
+  Serial.print("Subscribing at QoS 2, packetId: ");
+  Serial.println(packetIdSub);
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
@@ -88,10 +95,48 @@ void onMqttPublish(uint16_t packetId) {
   Serial.println(packetId);
 }
 
+// subscriptor MQTT
+void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
+  Serial.println("Subscribe acknowledged.");
+  Serial.print("  packetId: ");
+  Serial.println(packetId);
+  Serial.print("  qos: ");
+  Serial.println(qos);
+}
+void onMqttUnsubscribe(uint16_t packetId) {
+  Serial.println("Unsubscribe acknowledged.");
+  Serial.print("  packetId: ");
+  Serial.println(packetId);
+}
+
+
+void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+  Serial.println("\n Publish received.");
+  Serial.print("topic: ");
+  Serial.println(topic);
+  String messageTemp;
+  for (int i = 0; i < len; i++) {
+    messageTemp += (char)payload[i];
+  }
+    Serial.print("Message: ");
+    Serial.println(messageTemp);
+
+  if (messageTemp == "ON"){
+  digitalWrite(OutPin, HIGH); 
+  Serial.println("LED is now ON!");
+  }
+
+  else{
+  digitalWrite(OutPin, LOW); 
+  Serial.println("LED is now OFF");
+  }
+}
+
+
 void setup() {
   Serial.begin(115200);
   Serial.println();
-//  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+   pinMode(OutPin, OUTPUT);
 
   dht.begin();
   delay(1000);
@@ -104,6 +149,9 @@ void setup() {
   mqttClient.onConnect(onMqttConnect);
   mqttClient.onDisconnect(onMqttDisconnect);
   mqttClient.onPublish(onMqttPublish);
+  mqttClient.onSubscribe(onMqttSubscribe);
+  mqttClient.onUnsubscribe(onMqttUnsubscribe);
+  mqttClient.onMessage(onMqttMessage);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   connectToWifi();
 
