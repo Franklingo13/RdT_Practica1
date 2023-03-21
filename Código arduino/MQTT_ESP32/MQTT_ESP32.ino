@@ -29,6 +29,7 @@ const char* SSID_PASSWORD = "12345678";
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
 #define MQTT_SUB_OUT_TEMP "esp32/OutputControl"
 #define MQTT_SUB_DOOR "esp32/DoorControl"
+#define MQTT_SUB_SPIN "esp32/SpinControl"
 
 const int OutPin = 22;
 const int DoorPin = 23;
@@ -92,6 +93,11 @@ void onMqttConnect(bool sessionPresent) {
   uint16_t packetIdSub2 = mqttClient.subscribe(MQTT_SUB_DOOR, 2);
   Serial.print("Subscribing Puerta at QoS 2, packetId: ");
   Serial.println(packetIdSub2);
+
+  //suscripcion para control de giro
+  uint16_t packetIdSub3 = mqttClient.subscribe(MQTT_SUB_SPIN, 2);
+  Serial.print("Subscribing Giro at QoS 2, packetId: ");
+  Serial.println(packetIdSub3);
   
 }
 
@@ -133,7 +139,9 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
     Serial.print("Message: ");
     Serial.println(messageTemp);
+    
 
+  
   if (messageTemp == "ON"){
   digitalWrite(OutPin, HIGH); 
   Serial.println("Refrigeración encendida");
@@ -153,29 +161,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
   
 }
-/*
-//Void message para control de puerta
-void onMqttMessage2(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-  Serial.println("\n Publish received.");
-  Serial.print("topic: ");
-  Serial.println(topic);
-  String messageDoor;
-  for (int i = 0; i < len; i++) {
-    messageDoor += (char)payload[i];
-  }
-    Serial.print("Message: ");
-    Serial.println(messageDoor);
-
-  if (messageDoor == "OPEN"){
-  digitalWrite(DoorPin, HIGH); 
-  Serial.println("Bodega abierta");
-  }
-  if (messageDoor == "CLOSE"){
-  digitalWrite(DoorPin, LOW); 
-  Serial.println("Bodega abierta");
-  }
-
-}*/
 
 
 void setup() {
