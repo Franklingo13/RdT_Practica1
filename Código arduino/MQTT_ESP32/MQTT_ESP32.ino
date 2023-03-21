@@ -90,7 +90,7 @@ void onMqttConnect(bool sessionPresent) {
 
   //suscripcion para control de la puerta
   uint16_t packetIdSub2 = mqttClient.subscribe(MQTT_SUB_DOOR, 2);
-  Serial.print("Subscribing at QoS 2, packetId: ");
+  Serial.print("Subscribing Puerta at QoS 2, packetId: ");
   Serial.println(packetIdSub2);
   
 }
@@ -136,15 +136,24 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
   if (messageTemp == "ON"){
   digitalWrite(OutPin, HIGH); 
-  Serial.println("LED is now ON!");
+  Serial.println("Refrigeración encendida");
   }
-
-  else{
+  if (messageTemp == "OFF"){
   digitalWrite(OutPin, LOW); 
-  Serial.println("LED is now OFF");
+  Serial.println("Refrigeración apagada");
   }
-}
+  if (messageTemp == "OPEN"){
+  digitalWrite(DoorPin, HIGH); 
+  Serial.println("Bodega abierta");
+  }
+  if (messageTemp == "CLOSE"){
+  digitalWrite(DoorPin, LOW); 
+  Serial.println("Bodega cerrada");
+  }
 
+  
+}
+/*
 //Void message para control de puerta
 void onMqttMessage2(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   Serial.println("\n Publish received.");
@@ -166,7 +175,7 @@ void onMqttMessage2(char* topic, char* payload, AsyncMqttClientMessageProperties
   Serial.println("Bodega abierta");
   }
 
-}
+}*/
 
 
 void setup() {
@@ -189,8 +198,7 @@ void setup() {
   mqttClient.onSubscribe(onMqttSubscribe);
   mqttClient.onUnsubscribe(onMqttUnsubscribe);
   mqttClient.onMessage(onMqttMessage);
-  // puerta
-   mqttClient.onMessage(onMqttMessage2);
+  // puerta mqttClient.onMessage(onMqttMessage2);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   connectToWifi();
 
