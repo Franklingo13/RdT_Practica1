@@ -49,6 +49,7 @@ const char* SSID_PASSWORD = "12345678";
 #define MQTT_PUB_TEMP_DHT "esp32/dht/temperature"
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
 #define MQTT_PUB_UID  "esp32/PN532"
+#define MQTT_PUB_US  "esp32/Nivel"
 #define MQTT_SUB_OUT_TEMP "esp32/OutputControl"
 #define MQTT_SUB_DOOR "esp32/DoorControl"
 #define MQTT_SUB_SPIN "esp32/SpinControl"
@@ -57,13 +58,23 @@ const char* SSID_PASSWORD = "12345678";
 const int OutPin = 22;
 const int DoorPin = 21;
 
-// Definimos el pin digital donde se conecta el sensor
+// Definimos varables del sensor DHT11
 #define DHTPIN 15
 // Dependiendo del tipo de sensor
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
-float temperature_DHT, humidity_DHT; //variables para DHT
+float temperature_DHT, humidity_DHT;
 
+// _____ Variables para el sensor HCSR04
+int number = 0;
+const int  Trigger = 4;
+const int  Echo = 16;
+int tiempo;
+int distancia;
+int indicador=0;
+int aux1=0;
+int aux2=0;
+int aux3=0;
 
 
 //Creación de un objeto AsyncMqttClient
@@ -196,6 +207,8 @@ bool isEqualArray(uint8_t* arrayA, uint8_t* arrayB, uint8_t length)
 }
 //___________________________________________________
 
+
+
 void rfid(){
   //_____ lectura de RFID_________________________________
   nfc.begin(); //Comienza la comunicación del PN532
@@ -223,6 +236,9 @@ void setup() {
   Serial.println();
    pinMode(OutPin, OUTPUT);
    pinMode(DoorPin, OUTPUT);
+   pinMode(Trigger, OUTPUT);
+   pinMode(Echo, INPUT);
+   digitalWrite(Trigger, LOW);
   
   dht.begin();
   delay(1000);
@@ -244,7 +260,6 @@ void setup() {
   connectToWifi();
   delay(5000);
   
-
 }
 
 void loop() {
@@ -321,5 +336,64 @@ void loop() {
     
   }
   //======================RFID=========================================
+
+
+  // ------------------Ultrasonido----------
+  digitalWrite(Trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(Trigger, LOW);
+  tiempo = pulseIn(Echo, HIGH);
+  distancia = tiempo/59;
+ Serial.print("Distancia: ");
+  Serial.print(distancia);
+  Serial.println(" cm");
+
+  // Publica un mensaje MQTT en el topic  "esp32/Nivel"
+    uint16_t packetIdPub5 = mqttClient.publish(MQTT_PUB_US, 0, true, String(distancia).c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub5);
+  
+  if (distancia < 15 && distancia >= 10){
+    Serial.println("Bajo");
+    indicador= 1;
+    if (aux1 == 0){
+       Serial.println("Atencion !!..  Nivel bajo de pruducto");
+       aux1=1;
+      }
+    aux2=0;
+    aux3=0;
+    }
+  if (distancia < 10 && distancia >= 5){
+    Serial.println("Medio");
+    indicador= 5;
+    aux1=0;
+    aux2=0;
+    aux3=0;
+    }
+  if (distancia < 5 && distancia > 0){
+    Serial.println("Alto");
+    indicador= 10;
+
+    if (aux3 == 0){
+       Serial.println("Productos LLENOS :)");
+       aux3=1;
+      }
+    aux1=0;
+    aux2=0;
+    }
+  if (distancia >= 15){
+    Serial.println("Vacio");
+    indicador =0 ;
+    if (aux2 == 0){
+      Serial.println("Alerta..!!..  No hay productos..");
+       aux2=1;
+      }
+    aux1=0;
+    aux3=0;
+    
+    }
+   delay(2000);
+//----------------------Ultrasonido---------------------------
+
+  
 
 }
