@@ -21,6 +21,8 @@ void printArray(byte *buffer, byte bufferSize) {
    }
 }
 
+
+
 void setup() {
   Serial.begin(115200); //Inicio de puerto Serial a 115200 baudios
   nfc.begin(); //Comienza la comunicación del PN532
@@ -46,6 +48,16 @@ void setup() {
 
   Serial.println("Esperando una tarjeta ISO14443A ...");
 }
+  uint8_t validUID[4] = { 0x39, 0xB3, 0x43, 0xE8 };  // UID:FRANK
+//Función para comparar dos vectores
+bool isEqualArray(uint8_t* arrayA, uint8_t* arrayB, uint8_t length)
+{
+  for (uint8_t index = 0; index < length; index++)
+  {
+    if (arrayA[index] != arrayB[index]) return false;
+  }
+  return true;
+}
 
 void loop() {
   boolean LeeTarjeta; //Variable para almacenar la detección de una tarjeta
@@ -68,15 +80,29 @@ void loop() {
       Serial.print(" 0x"); Serial.print(uid[i], HEX);
 
     }*/
+    
     Serial.print("UID: "); printArray(uid, LongitudUID);
+    Serial.println("");
+
+    if (isEqualArray(uid, validUID, LongitudUID))
+    {
+      Serial.println("Franklin Conectado");
+      delay(5000);
+    }
+    else
+    {
+      Serial.println("Tarjeta invalida");
+
+
     
     Serial.println("");
     delay (1000); // Espera de 1 segundo
   }
-
+  }
   //Si no se detecta tarjeta
   else
   {
     Serial.println("Se agotó el tiempo de espera de una tarjeta");
   }
+
 }
