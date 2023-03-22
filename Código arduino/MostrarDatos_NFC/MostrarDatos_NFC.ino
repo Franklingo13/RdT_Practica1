@@ -10,9 +10,7 @@
 #define PN532_MISO (19)
 
 uint8_t DatoRecibido[4]; //Para almacenar los datos
-
 UNIT_PN532 nfc(PN532_SS);// Línea enfocada para la comunicación por SPI
-
 // Funcion auxiliar para mostrar el buffer
 void printArray(byte *buffer, byte bufferSize) {
    for (byte i = 0; i < bufferSize; i++) {
@@ -24,11 +22,11 @@ void printArray(byte *buffer, byte bufferSize) {
 
 
 void setup() {
+
+//_____ lectura de RFID_________________________________
   Serial.begin(115200); //Inicio de puerto Serial a 115200 baudios
   nfc.begin(); //Comienza la comunicación del PN532
-
   uint32_t versiondata = nfc.getFirmwareVersion();//Obtiene información de la placa
-
   if (! versiondata) { //Si no se encuentra comunicación con la placa --->
     Serial.print("No se encontró la placa PN53x");
     while (1); // Detener
@@ -38,15 +36,11 @@ void setup() {
   Serial.print("Firmware ver. ");
   Serial.print((versiondata >> 16) & 0xFF, DEC); // Imprime que versión de firmware tiene la placa
   Serial.print('.'); Serial.println((versiondata >> 8) & 0xFF, DEC);
-
   //Establezca el número máximo de reintentos para leer de una tarjeta.
-  //Esto evita que tengamos que esperar eternamente por una tarjeta,
-  //que es el comportamiento predeterminado del PN532.
   nfc.setPassiveActivationRetries(0xFF);
-
   nfc.SAMConfig(); //Configura la placa para realizar la lectura
-
   Serial.println("Esperando una tarjeta ISO14443A ...");
+//_____ lectura de RFID_________________________________
 }
   uint8_t validUID[4] = { 0x39, 0xB3, 0x43, 0xE8 };  // UID:FRANK
 //Función para comparar dos vectores
@@ -60,13 +54,12 @@ bool isEqualArray(uint8_t* arrayA, uint8_t* arrayB, uint8_t length)
 }
 
 void loop() {
+  //======================RFID=========================================
   boolean LeeTarjeta; //Variable para almacenar la detección de una tarjeta
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Búfer para almacenar el UID devuelto
   uint8_t LongitudUID; //Variable para almacenar la longitud del UID de la tarjeta
-
   //Recepción y detección de los datos de la tarjeta y almacenamiento en la variable "LeeTarjeta"
   LeeTarjeta = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &LongitudUID);
-
   //Se detecto un tarjeta RFID
   if (LeeTarjeta) {
     Serial.println("Tarjeta encontrada!");
@@ -75,15 +68,8 @@ void loop() {
     Serial.println(" bytes");
     Serial.print("Valor del UID: ");
     // Imprime los datos almacenados en la tarjeta en Hexadecimal
-    /*for (uint8_t i = 0; i < LongitudUID; i++)
-    {
-      Serial.print(" 0x"); Serial.print(uid[i], HEX);
-
-    }*/
-    
     Serial.print("UID: "); printArray(uid, LongitudUID);
     Serial.println("");
-
     if (isEqualArray(uid, validUID, LongitudUID))
     {
       Serial.println("Franklin Conectado");
@@ -92,9 +78,6 @@ void loop() {
     else
     {
       Serial.println("Tarjeta invalida");
-
-
-    
     Serial.println("");
     delay (1000); // Espera de 1 segundo
   }
@@ -104,5 +87,6 @@ void loop() {
   {
     Serial.println("Se agotó el tiempo de espera de una tarjeta");
   }
+  //======================RFID=========================================
 
 }
