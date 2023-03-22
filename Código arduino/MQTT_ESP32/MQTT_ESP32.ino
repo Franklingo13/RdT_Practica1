@@ -12,6 +12,8 @@ extern "C" {
 #include <SPI.h> //Librería para comunicación SPI
 #include <UNIT_PN532.h> //Librería Modificada
 
+#include <Servo.h>
+
 //Conexiones SPI del ESP32
 #define PN532_SCK  (18)
 #define PN532_MOSI (23)
@@ -27,6 +29,12 @@ void printArray(byte *buffer, byte bufferSize) {
       Serial.print(buffer[i], HEX);
    }
 }
+
+// SERVO
+static const int servoPin = 13;
+Servo servo1;
+int posDegrees = 0;
+
 
 // Conexión WiFi
 /*const char* SSID = "POCOX3";
@@ -166,6 +174,15 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   Serial.println("\n Publish received.");
   Serial.print("topic: ");
   Serial.println(topic);
+  int TopLen = 17;
+  String TopicName;
+  for (int i = 0; i < TopLen; i++) {
+    TopicName += (char)topic[i];
+  }
+   Serial.print("este es el nombre del topic: ");
+   Serial.println(TopicName);
+
+  
   String messageTemp;
   for (int i = 0; i < len; i++) {
     messageTemp += (char)payload[i];
@@ -188,6 +205,12 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   if (messageTemp == "CLOSE"){
   digitalWrite(DoorPin, LOW); 
   Serial.println("Bodega cerrada");
+  }
+
+  if (TopicName == "esp32/SpinControl"){
+    int grado = messageTemp.toInt();
+    Serial.println("________Topic para servo_________");
+    servo1.write(grado);
   }
 
   
@@ -239,6 +262,7 @@ void setup() {
    pinMode(Trigger, OUTPUT);
    pinMode(Echo, INPUT);
    digitalWrite(Trigger, LOW);
+   servo1.attach(servoPin);
   
   dht.begin();
   delay(1000);
@@ -309,20 +333,24 @@ void loop() {
       // Publica un mensaje MQTT en el topic  "esp32/DoorControl"
     uint16_t packetIdPub3 = mqttClient.publish(MQTT_SUB_DOOR, 0, true, String("OPEN").c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_SUB_DOOR, packetIdPub3);
+    Serial.println("");
     //Serial.printf("Message: %.2f \n", temperature_DHT);
       //delay(5000);
       // Publica un mensaje MQTT en el topic  "esp32/EPN532"
     uint16_t packetIdPub4 = mqttClient.publish(MQTT_PUB_UID, 0, true, String("Franklin").c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub4);
+    Serial.println("");
     }
     else if (isEqualArray(uid, jdUID, LongitudUID)){
       // Publica un mensaje MQTT en el topic  "esp32/DoorControl"
     uint16_t packetIdPub3 = mqttClient.publish(MQTT_SUB_DOOR, 0, true, String("OPEN").c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_SUB_DOOR, packetIdPub3);
+    Serial.println("");
     //Serial.printf("Message: %.2f \n", temperature_DHT);
       // Publica un mensaje MQTT en el topic  "esp32/EPN532"
     uint16_t packetIdPub4 = mqttClient.publish(MQTT_PUB_UID, 0, true, String("Juan D").c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub4);
+    Serial.println("");
     }
     else
     {
@@ -351,6 +379,7 @@ void loop() {
   // Publica un mensaje MQTT en el topic  "esp32/Nivel"
     uint16_t packetIdPub5 = mqttClient.publish(MQTT_PUB_US, 0, true, String(distancia).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub5);
+    Serial.println("");
   
   if (distancia < 15 && distancia >= 10){
     Serial.println("Bajo");
