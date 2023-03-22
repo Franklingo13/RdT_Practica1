@@ -7,6 +7,27 @@ extern "C" {
 }
 #include <AsyncMqttClient.h>
 
+//Librerías para lectura RFID
+#include <Wire.h>
+#include <SPI.h> //Librería para comunicación SPI
+#include <UNIT_PN532.h> //Librería Modificada
+
+//Conexiones SPI del ESP32
+#define PN532_SCK  (18)
+#define PN532_MOSI (23)
+#define PN532_SS   (5)
+#define PN532_MISO (19)
+uint8_t DatoRecibido[4]; //Para almacenar los datos
+
+UNIT_PN532 nfc(PN532_SS);// Línea enfocada para la comunicación por SPI
+// Funcion auxiliar para mostrar el buffer
+void printArray(byte *buffer, byte bufferSize) {
+   for (byte i = 0; i < bufferSize; i++) {
+      Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+      Serial.print(buffer[i], HEX);
+   }
+}
+
 // Conexión WiFi
 /*const char* SSID = "POCOX3";
 const char* SSID_PASSWORD = "pocox5597";*/
@@ -24,15 +45,17 @@ const char* SSID_PASSWORD = "12345678";
 //#define MQTT_HOST "192.168.0.53" 
 #define MQTT_PORT 1883
 
-//MQTT Topics
+//__________________MQTT Topics____________________________
 #define MQTT_PUB_TEMP_DHT "esp32/dht/temperature"
 #define MQTT_PUB_HUM_DHT  "esp32/dht/humidity"
+#define MQTT_PUB_UID  "esp32/PN532"
 #define MQTT_SUB_OUT_TEMP "esp32/OutputControl"
 #define MQTT_SUB_DOOR "esp32/DoorControl"
 #define MQTT_SUB_SPIN "esp32/SpinControl"
 
+
 const int OutPin = 22;
-const int DoorPin = 23;
+const int DoorPin = 21;
 
 // Definimos el pin digital donde se conecta el sensor
 #define DHTPIN 15
@@ -139,8 +162,6 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
     Serial.print("Message: ");
     Serial.println(messageTemp);
-    
-
   
   if (messageTemp == "ON"){
   digitalWrite(OutPin, HIGH); 
@@ -162,15 +183,50 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   
 }
 
+//_____________funcion para validación de UID____________________
+  uint8_t validUID[4] = { 0x39, 0xB3, 0x43, 0xE8 };  // UID:FRANK
+//Función para comparar dos vectores
+bool isEqualArray(uint8_t* arrayA, uint8_t* arrayB, uint8_t length)
+{
+  for (uint8_t index = 0; index < length; index++)
+  {
+    if (arrayA[index] != arrayB[index]) return false;
+  }
+  return true;
+}
+//___________________________________________________
+
+void rfid(){
+  //_____ lectura de RFID_________________________________
+  nfc.begin(); //Comienza la comunicación del PN532
+  delay(1000);
+  uint32_t versiondata = nfc.getFirmwareVersion();//Obtiene información de la placa
+  if (! versiondata) { //Si no se encuentra comunicación con la placa --->
+    Serial.print("No se encontró la placa PN53x");
+    while (1); // Detener
+  }
+  Serial.print("Chip encontrado PN5");
+  Serial.println((versiondata >> 24) & 0xFF, HEX); //Imprime en el serial que version de Chip es el lector
+  Serial.print("Firmware ver. ");
+  Serial.print((versiondata >> 16) & 0xFF, DEC); // Imprime que versión de firmware tiene la placa
+  Serial.print('.'); Serial.println((versiondata >> 8) & 0xFF, DEC);
+  //Establezca el número máximo de reintentos para leer de una tarjeta.
+  nfc.setPassiveActivationRetries(0xFF);
+  nfc.SAMConfig(); //Configura la placa para realizar la lectura
+  Serial.println("Esperando una tarjeta ISO14443A ...");
+  return;
+}
 
 void setup() {
   Serial.begin(115200);
   Serial.println();
    pinMode(OutPin, OUTPUT);
    pinMode(DoorPin, OUTPUT);
-
+  
+  
   dht.begin();
   delay(1000);
+  rfid();
 
   mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
   wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
@@ -186,6 +242,8 @@ void setup() {
   // puerta mqttClient.onMessage(onMqttMessage2);
   mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   connectToWifi();
+  delay(5000);
+  
 
 }
 
@@ -203,16 +261,53 @@ void loop() {
       return;
     }
     unsigned long currentMillis = millis();
-
-    // Publish an MQTT message on topic esp32/dht/temperature
+  
+    // Publica un mensaje MQTT en el topic esp32/dht/temperature
     uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP_DHT, 0, true, String(temperature_DHT).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_TEMP_DHT, packetIdPub1);
     Serial.printf("Message: %.2f \n", temperature_DHT);
 
-    // Publish an MQTT message on topic esp32/dht/humidity
+    // Publica un mensaje MQTT en el topic esp32/dht/humidity
     uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_HUM_DHT, 1, true, String(humidity_DHT).c_str());                            
     Serial.printf("Publishing on topic %s at QoS 1, packetId %i: ", MQTT_PUB_HUM_DHT, packetIdPub2);
     Serial.printf("Message: %.2f \n", humidity_DHT);
   }
+  //======================RFID=========================================
+  boolean LeeTarjeta; //Variable para almacenar la detección de una tarjeta
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Búfer para almacenar el UID devuelto
+  uint8_t LongitudUID; //Variable para almacenar la longitud del UID de la tarjeta
+  //Recepción y detección de los datos de la tarjeta y almacenamiento en la variable "LeeTarjeta"
+  LeeTarjeta = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &LongitudUID, 5000);
+  //Se detecto un tarjeta RFID
+  if (LeeTarjeta) {
+    Serial.println("Tarjeta encontrada!");
+    Serial.print("Longitud del UID: ");
+    Serial.print(LongitudUID, DEC); //Imprime la longitud de los datos de la tarjeta en decimal
+    Serial.println(" bytes");
+    Serial.print("Valor del UID: ");
+    // Imprime los datos almacenados en la tarjeta en Hexadecimal
+    Serial.print("UID: "); printArray(uid, LongitudUID);
+    Serial.println("");
+    if (isEqualArray(uid, validUID, LongitudUID))
+    {
+      Serial.println("Franklin Conectado");
+      // Publica un mensaje MQTT en el topic  "esp32/DoorControl"
+    uint16_t packetIdPub3 = mqttClient.publish(MQTT_SUB_DOOR, 0, true, String("OPEN").c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_SUB_DOOR, packetIdPub3);
+    //Serial.printf("Message: %.2f \n", temperature_DHT);
+      //delay(5000);
+    }
+    else
+    {
+      Serial.println("Tarjeta invalida");
+  }
+  }
+  //Si no se detecta tarjeta
+  else
+  {
+    Serial.println("Se agotó el tiempo de espera de una tarjeta");
+    
+  }
+  //======================RFID=========================================
 
 }
