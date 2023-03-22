@@ -62,8 +62,7 @@ const int DoorPin = 21;
 // Dependiendo del tipo de sensor
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
-
-float temperature_DHT, humidity_DHT; //variables for DHT
+float temperature_DHT, humidity_DHT; //variables para DHT
 
 
 
@@ -185,6 +184,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 
 //_____________funcion para validación de UID____________________
   uint8_t validUID[4] = { 0x39, 0xB3, 0x43, 0xE8 };  // UID:FRANK
+  uint8_t jdUID[4] = { 0x32, 0x1F, 0xFA, 0x21 };  // UID:JUAN DIEGO
 //Función para comparar dos vectores
 bool isEqualArray(uint8_t* arrayA, uint8_t* arrayB, uint8_t length)
 {
@@ -216,13 +216,13 @@ void rfid(){
   Serial.println("Esperando una tarjeta ISO14443A ...");
   return;
 }
+//___________________________________________________________________________________
 
 void setup() {
   Serial.begin(115200);
   Serial.println();
    pinMode(OutPin, OUTPUT);
    pinMode(DoorPin, OUTPUT);
-  
   
   dht.begin();
   delay(1000);
@@ -296,6 +296,18 @@ void loop() {
     Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_SUB_DOOR, packetIdPub3);
     //Serial.printf("Message: %.2f \n", temperature_DHT);
       //delay(5000);
+      // Publica un mensaje MQTT en el topic  "esp32/EPN532"
+    uint16_t packetIdPub4 = mqttClient.publish(MQTT_PUB_UID, 0, true, String("Franklin").c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub4);
+    }
+    else if (isEqualArray(uid, jdUID, LongitudUID)){
+      // Publica un mensaje MQTT en el topic  "esp32/DoorControl"
+    uint16_t packetIdPub3 = mqttClient.publish(MQTT_SUB_DOOR, 0, true, String("OPEN").c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_SUB_DOOR, packetIdPub3);
+    //Serial.printf("Message: %.2f \n", temperature_DHT);
+      // Publica un mensaje MQTT en el topic  "esp32/EPN532"
+    uint16_t packetIdPub4 = mqttClient.publish(MQTT_PUB_UID, 0, true, String("Juan D").c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub4);
     }
     else
     {
