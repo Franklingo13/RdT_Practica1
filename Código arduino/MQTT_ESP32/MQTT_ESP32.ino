@@ -355,6 +355,10 @@ void loop() {
     else
     {
       Serial.println("Tarjeta invalida");
+      // Publica un mensaje MQTT en el topic  "esp32/EPN532"
+    uint16_t packetIdPub5 = mqttClient.publish(MQTT_PUB_UID, 0, true, String("Acceso denegado").c_str());                            
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: %i", MQTT_PUB_UID, packetIdPub5);
+    Serial.println("");
   }
   }
   //Si no se detecta tarjeta
