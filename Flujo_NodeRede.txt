@@ -1,0 +1,1155 @@
+[
+    {
+        "id": "02585a8ece762b95",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "1c51be79d15435fb",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/dht/temperature",
+        "qos": "1",
+        "datatype": "auto",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 300,
+        "y": 300,
+        "wires": [
+            [
+                "0c5b84001c91bd13",
+                "aa24d53e5f332ebb",
+                "ee8cbc4a63a17e56",
+                "5199b524d85ef0ed"
+            ]
+        ]
+    },
+    {
+        "id": "f9f0f66dd1ae5613",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/dht/humidity",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 460,
+        "wires": [
+            [
+                "93c38bd13f755884"
+            ]
+        ]
+    },
+    {
+        "id": "0c5b84001c91bd13",
+        "type": "ui_gauge",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "4eccaf164dd12336",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Temperatura",
+        "label": "° C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "60",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 530,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "93c38bd13f755884",
+        "type": "ui_gauge",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "4eccaf164dd12336",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Humedad",
+        "label": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 540,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "7feddcf683446ee4",
+        "type": "mqtt out",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/OutputControl",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "989b872bd627142a",
+        "x": 560,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "e082cc7370d2903b",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/OutputControl",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 770,
+        "y": 600,
+        "wires": [
+            [
+                "675d8d8fa9fca442"
+            ]
+        ]
+    },
+    {
+        "id": "607f9daef560faad",
+        "type": "ui_button",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "4eccaf164dd12336",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "FRIG ON",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "ON",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 560,
+        "wires": [
+            [
+                "7feddcf683446ee4"
+            ]
+        ]
+    },
+    {
+        "id": "b34e08ec909004af",
+        "type": "ui_button",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "4eccaf164dd12336",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "label": "FRIG OFF",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "OFF",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 290,
+        "y": 640,
+        "wires": [
+            [
+                "7feddcf683446ee4"
+            ]
+        ]
+    },
+    {
+        "id": "675d8d8fa9fca442",
+        "type": "ui_text",
+        "z": "02585a8ece762b95",
+        "group": "4eccaf164dd12336",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Estado de la refirgeración",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "x": 1090,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "aa24d53e5f332ebb",
+        "type": "switch",
+        "z": "02585a8ece762b95",
+        "name": "switch1",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "28",
+                "vt": "num"
+            },
+            {
+                "t": "lte",
+                "v": "28",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 420,
+        "y": 380,
+        "wires": [
+            [
+                "607f9daef560faad"
+            ],
+            [
+                "b34e08ec909004af"
+            ]
+        ]
+    },
+    {
+        "id": "ae6d36b237539088",
+        "type": "ui_button",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "b9a1a21f545a2382",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Abrir bodega",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "OPEN",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 290,
+        "y": 740,
+        "wires": [
+            [
+                "b95e160d26ee98e5"
+            ]
+        ]
+    },
+    {
+        "id": "8df35cc6c8d2a4a9",
+        "type": "ui_button",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "b9a1a21f545a2382",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Cerrar Bodega",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "CLOSE",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 300,
+        "y": 820,
+        "wires": [
+            [
+                "b95e160d26ee98e5"
+            ]
+        ]
+    },
+    {
+        "id": "b95e160d26ee98e5",
+        "type": "mqtt out",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/DoorControl",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "989b872bd627142a",
+        "x": 610,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "4dce3ba62e782eb1",
+        "type": "ui_text",
+        "z": "02585a8ece762b95",
+        "group": "b9a1a21f545a2382",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Bodega:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1040,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "6e9e80109ca68fda",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/DoorControl",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 830,
+        "y": 780,
+        "wires": [
+            [
+                "4dce3ba62e782eb1",
+                "aa9680f88031be20"
+            ]
+        ]
+    },
+    {
+        "id": "74f5b4e5bc37eb9b",
+        "type": "ui_slider",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "label": "Grados de giro",
+        "tooltip": "",
+        "group": "3e8f1a3dda38d69c",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "msg",
+        "min": 0,
+        "max": "180",
+        "step": "5",
+        "x": 480,
+        "y": 940,
+        "wires": [
+            [
+                "209a14be0ad59ff0"
+            ]
+        ]
+    },
+    {
+        "id": "209a14be0ad59ff0",
+        "type": "mqtt out",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/SpinControl",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "989b872bd627142a",
+        "x": 690,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "5adbe0f195cf0faf",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/SpinControl",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 910,
+        "y": 940,
+        "wires": [
+            [
+                "99f32a1ce67d153d"
+            ]
+        ]
+    },
+    {
+        "id": "99f32a1ce67d153d",
+        "type": "ui_text",
+        "z": "02585a8ece762b95",
+        "group": "3e8f1a3dda38d69c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Grado de giro",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "x": 1160,
+        "y": 940,
+        "wires": []
+    },
+    {
+        "id": "da1e6c3583860b23",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/PN532",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 810,
+        "y": 720,
+        "wires": [
+            [
+                "66a27b57a225f699"
+            ]
+        ]
+    },
+    {
+        "id": "66a27b57a225f699",
+        "type": "ui_text_input",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "label": "Bodega abierta por:",
+        "tooltip": "",
+        "group": "b9a1a21f545a2382",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 1030,
+        "y": 720,
+        "wires": [
+            [
+                "ef809a42d53a0977"
+            ]
+        ]
+    },
+    {
+        "id": "caba62469cfc6f4e",
+        "type": "mqtt in",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "esp32/Nivel",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989b872bd627142a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 1220,
+        "wires": [
+            [
+                "d2c0e42ab343f22d",
+                "d5741e3b94ad7698"
+            ]
+        ]
+    },
+    {
+        "id": "d2c0e42ab343f22d",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "name": "function 1",
+        "func": "var nivel = parseInt(msg.payload);\n\nif (nivel > 15) {\n    msg.payload=\"Vacío\";\n    return msg\n} else if (nivel < 15 && nivel>=10){\n    msg.payload = \"Bajo\";\n    return msg\n} else if (nivel < 10 && nivel >= 5){\n    msg.payload = \"Medio\";\n    return msg\n} else if (nivel < 5 && nivel > 0){\n    msg.payload = \"Alto\";\n    return msg\n}\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1300,
+        "wires": [
+            [
+                "a815fe3394858993",
+                "832d056729a2bee5"
+            ]
+        ]
+    },
+    {
+        "id": "d5741e3b94ad7698",
+        "type": "ui_chart",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "group": "6649151a5e153354",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "Nivel de producto",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "11",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d72842",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "x": 430,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a815fe3394858993",
+        "type": "ui_text",
+        "z": "02585a8ece762b95",
+        "group": "6649151a5e153354",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Cantidad de Producto:",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "x": 580,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "f646f9c1cc396964",
+        "type": "bigtimer",
+        "z": "02585a8ece762b95",
+        "outtopic": "",
+        "outpayload1": "",
+        "outpayload2": "",
+        "name": "Big Timer",
+        "comment": "",
+        "lat": 0,
+        "lon": 0,
+        "starttime": "1140",
+        "endtime": "1140",
+        "starttime2": "1155",
+        "endtime2": "1155",
+        "startoff": "0",
+        "endoff": "16",
+        "startoff2": 0,
+        "endoff2": "3",
+        "offs": 0,
+        "outtext1": "true",
+        "outtext2": "false",
+        "timeout": 1440,
+        "sun": true,
+        "mon": true,
+        "tue": true,
+        "wed": true,
+        "thu": true,
+        "fri": true,
+        "sat": true,
+        "jan": true,
+        "feb": true,
+        "mar": true,
+        "apr": true,
+        "may": true,
+        "jun": true,
+        "jul": true,
+        "aug": true,
+        "sep": true,
+        "oct": true,
+        "nov": true,
+        "dec": true,
+        "day1": 0,
+        "month1": 0,
+        "day2": 0,
+        "month2": 0,
+        "day3": 0,
+        "month3": 0,
+        "day4": 0,
+        "month4": 0,
+        "day5": 0,
+        "month5": 0,
+        "day6": 0,
+        "month6": 0,
+        "day7": 0,
+        "month7": 0,
+        "day8": 0,
+        "month8": 0,
+        "day9": 0,
+        "month9": 0,
+        "day10": 0,
+        "month10": 0,
+        "day11": 0,
+        "month11": 0,
+        "day12": 0,
+        "month12": 0,
+        "d1": 0,
+        "w1": 0,
+        "d2": 0,
+        "w2": 0,
+        "d3": 0,
+        "w3": 0,
+        "d4": 0,
+        "w4": 0,
+        "d5": 0,
+        "w5": 0,
+        "d6": 0,
+        "w6": 0,
+        "xday1": 0,
+        "xmonth1": 0,
+        "xday2": 0,
+        "xmonth2": 0,
+        "xday3": 0,
+        "xmonth3": 0,
+        "xday4": 0,
+        "xmonth4": 0,
+        "xday5": 0,
+        "xmonth5": 0,
+        "xday6": 0,
+        "xmonth6": 0,
+        "xday7": 0,
+        "xmonth7": 0,
+        "xday8": 0,
+        "xmonth8": 0,
+        "xday9": 0,
+        "xmonth9": 0,
+        "xday10": 0,
+        "xmonth10": 0,
+        "xday11": 0,
+        "xmonth11": 0,
+        "xday12": 0,
+        "xmonth12": 0,
+        "xd1": 0,
+        "xw1": 0,
+        "xd2": 0,
+        "xw2": 0,
+        "xd3": 0,
+        "xw3": 0,
+        "xd4": 0,
+        "xw4": 0,
+        "xd5": 0,
+        "xw5": 0,
+        "xd6": 0,
+        "xw6": 0,
+        "suspend": false,
+        "random": false,
+        "randon1": false,
+        "randoff1": false,
+        "randon2": false,
+        "randoff2": false,
+        "repeat": true,
+        "atstart": true,
+        "odd": false,
+        "even": false,
+        "x": 200,
+        "y": 1080,
+        "wires": [
+            [],
+            [
+                "b580392549c30b34"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "51c99e7e6c26a86f",
+        "type": "ui_switch",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "label": "Automático",
+        "tooltip": "",
+        "group": "3e8f1a3dda38d69c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "decouple": "false",
+        "topic": "topic",
+        "topicType": "msg",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "animate": false,
+        "x": 70,
+        "y": 940,
+        "wires": [
+            [
+                "f646f9c1cc396964"
+            ]
+        ]
+    },
+    {
+        "id": "4d0c12d38e909b7d",
+        "type": "timer-node",
+        "z": "02585a8ece762b95",
+        "name": "",
+        "topic": "",
+        "timer": "179",
+        "payloadOn": "180",
+        "payloadOnType": "num",
+        "payloadOff": "0",
+        "payloadOffType": "num",
+        "x": 290,
+        "y": 940,
+        "wires": [
+            [
+                "74f5b4e5bc37eb9b"
+            ],
+            [
+                "74f5b4e5bc37eb9b"
+            ]
+        ]
+    },
+    {
+        "id": "b580392549c30b34",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "name": "function 2",
+        "func": "var nivel = parseInt(msg.payload);\n\nif (nivel == 0) {\n    msg.payload= false;\n    return msg\n} else if (nivel==1){\n    msg.payload = true;\n    return msg\n} \nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 1060,
+        "wires": [
+            [
+                "4d0c12d38e909b7d"
+            ]
+        ]
+    },
+    {
+        "id": "b5bc0b02e2292b0f",
+        "type": "azureiotdevice",
+        "z": "02585a8ece762b95",
+        "d": true,
+        "deviceid": "nodoTempAzure",
+        "pnpModelid": "ESP32-FG.azure-devices.net",
+        "connectiontype": "dps",
+        "authenticationmethod": "sas",
+        "iothub": "",
+        "isIotcentral": true,
+        "scopeid": "",
+        "enrollmenttype": "group",
+        "saskey": "ezLxyJa9tzf89bDbJz7IkN7qVwdeKLTry+YD6XHtje0=",
+        "certname": "",
+        "keyname": "",
+        "passphrase": "",
+        "protocol": "mqtt",
+        "retryInterval": 10,
+        "methods": [],
+        "DPSpayload": "",
+        "gatewayHostname": "",
+        "caname": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "x": 970,
+        "y": 220,
+        "wires": [
+            [
+                "dbf3b04bb19ed4dc"
+            ]
+        ]
+    },
+    {
+        "id": "dbf3b04bb19ed4dc",
+        "type": "debug",
+        "z": "02585a8ece762b95",
+        "d": true,
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1200,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ee8cbc4a63a17e56",
+        "type": "debug",
+        "z": "02585a8ece762b95",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "5199b524d85ef0ed",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "d": true,
+        "name": "function 3",
+        "func": "msg = {\n    'topic': 'esp32/dht/temperature',\n    'payload': {\n        'Temp': msg.payload,\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 220,
+        "wires": [
+            [
+                "b5bc0b02e2292b0f",
+                "4931c432ba4e636b"
+            ]
+        ]
+    },
+    {
+        "id": "c90c183b2b11ceef",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "d": true,
+        "name": "sensor telemetry",
+        "func": "msg = {\n    'topic': 'telemetry',\n    'payload': {\n        'battery': Math.floor(Math.random() * 101),\n        'accelerometer': {\n            'x': Math.round((Math.random()*101) * 100000)/100000,\n            'y': Math.round((Math.random()*101) * 100000)/100000,\n            'z': Math.round((Math.random()*101) * 100000)/100000\n        },\n        'gyroscope': {\n            'x': Math.round((Math.random()*101) * 100000)/100000,\n            'y': Math.round((Math.random()*101) * 100000)/100000,\n            'z': Math.round((Math.random()*101) * 100000)/100000\n        },\n        'magnetometer': {\n            'x': Math.round((Math.random()*101) * 100000)/100000,\n            'y': Math.round((Math.random()*101) * 100000)/100000,\n            'z': Math.round((Math.random()*101) * 100000)/100000\n        },\n        'barometer': 850 + (Math.round(35000*Math.random())/100),\n        'geolocation': {\n            \"lat\": Math.round((Math.random()*.1 + 47.6) * 10000)/10000,\n            \"lon\": Math.round((Math.random()*.1 - 122.1) * 10000)/10000,\n            \"alt\": Math.floor(Math.random() * 10001)\n        }\n    },\n    'properties': [\n        {'key':'$.sub', 'value': 'sensors'}\n    ]\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4931c432ba4e636b",
+        "type": "debug",
+        "z": "02585a8ece762b95",
+        "d": true,
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "e09d3f798df5202f",
+        "type": "telegram sender",
+        "z": "02585a8ece762b95",
+        "name": "bot_Tg",
+        "bot": "5c3c2046b1f7e00d",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1360,
+        "y": 860,
+        "wires": [
+            [
+                "dd9a05489975cb81"
+            ]
+        ]
+    },
+    {
+        "id": "dd9a05489975cb81",
+        "type": "debug",
+        "z": "02585a8ece762b95",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1560,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "aa9680f88031be20",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "name": "function 4",
+        "func": "\nvar Comando = msg.payload;\nvar Cont;\nif (Comando == \"OPEN\"){\n    Cont = \"Bodega abierta\"\n} else if (Comando == \"CLOSE\") {\n    Cont = \"Bodega Cerrada\"\n};\n\nmsg.payload = \n    {\n        chatId: 386743637,\n        \"type\": \"message\",\n        \"content\": Cont\n        \n\n\n    };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1100,
+        "y": 840,
+        "wires": [
+            [
+                "e09d3f798df5202f"
+            ]
+        ]
+    },
+    {
+        "id": "33c60c44a24dda50",
+        "type": "telegram sender",
+        "z": "02585a8ece762b95",
+        "name": "bot_Tg",
+        "bot": "5c3c2046b1f7e00d",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 1500,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ef809a42d53a0977",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "name": "function 5",
+        "func": "\nvar Comando = msg.payload;\nvar Cont = \"Bodega abierta por: \"+ Comando;\n\nmsg.payload = \n    {\n        chatId: 386743637,\n        \"type\": \"message\",\n        \"content\": Cont\n        \n\n\n    };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1240,
+        "y": 720,
+        "wires": [
+            [
+                "33c60c44a24dda50"
+            ]
+        ]
+    },
+    {
+        "id": "07abf7fd2357a3d5",
+        "type": "telegram sender",
+        "z": "02585a8ece762b95",
+        "name": "bot_Tg",
+        "bot": "5c3c2046b1f7e00d",
+        "haserroroutput": false,
+        "outputs": 1,
+        "x": 600,
+        "y": 1400,
+        "wires": [
+            [
+                "23f72d69e9017da4"
+            ]
+        ]
+    },
+    {
+        "id": "832d056729a2bee5",
+        "type": "function",
+        "z": "02585a8ece762b95",
+        "name": "function 6",
+        "func": "\nvar Comando = msg.payload;\nvar Cont = \"Nivel de Producto: \"+ Comando;\n\nmsg.payload = \n    {\n        chatId: 386743637,\n        \"type\": \"message\",\n        \"content\": Cont\n        \n\n\n    };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 1400,
+        "wires": [
+            [
+                "07abf7fd2357a3d5"
+            ]
+        ]
+    },
+    {
+        "id": "23f72d69e9017da4",
+        "type": "debug",
+        "z": "02585a8ece762b95",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "989b872bd627142a",
+        "type": "mqtt-broker",
+        "name": "mosquitto",
+        "broker": "192.168.137.198",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "4eccaf164dd12336",
+        "type": "ui_group",
+        "name": "Lecturas DHT",
+        "tab": "0799c4dae08acecb",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "b9a1a21f545a2382",
+        "type": "ui_group",
+        "name": "Bodega",
+        "tab": "0799c4dae08acecb",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3e8f1a3dda38d69c",
+        "type": "ui_group",
+        "name": "Mostrador",
+        "tab": "0799c4dae08acecb",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "6649151a5e153354",
+        "type": "ui_group",
+        "name": "Stock",
+        "tab": "0799c4dae08acecb",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "5c3c2046b1f7e00d",
+        "type": "telegram bot",
+        "botname": "JD_F_RedesP1",
+        "usernames": "",
+        "chatids": "",
+        "baseapiurl": "",
+        "updatemode": "polling",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksprotocol": "socks5",
+        "socksport": "6667",
+        "socksusername": "anonymous",
+        "sockspassword": "",
+        "bothost": "",
+        "botpath": "",
+        "localbotport": "8443",
+        "publicbotport": "8443",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "sslterminated": false,
+        "verboselogging": false
+    },
+    {
+        "id": "0799c4dae08acecb",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
